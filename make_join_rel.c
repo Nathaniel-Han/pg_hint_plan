@@ -19,6 +19,8 @@
  *-------------------------------------------------------------------------
  */
 
+#define BIG_ASS_ROW_NUM 15000100010000000000.0
+
 /*
  * adjust_rows: tweak estimated row numbers according to the hint.
  */
@@ -182,10 +184,8 @@ make_join_rel(PlannerInfo *root, RelOptInfo *rel1, RelOptInfo *rel2)
 			if (justforme->base.state == HINT_STATE_NOTUSED)
 				joinrel->rows = adjust_rows(joinrel->rows, justforme);
 		}
-		else
+		else if (domultiply)
 		{
-			if (domultiply)
-			{
 				/*
 				 * If we have multiple routes up to this joinrel which are not
 				 * applicable this hint, this multiply hint will applied more
@@ -198,9 +198,11 @@ make_join_rel(PlannerInfo *root, RelOptInfo *rel1, RelOptInfo *rel2)
 										   restrictlist);
 				
 				joinrel->rows = adjust_rows(joinrel->rows, domultiply);
-			}
-			
 		}
+        else
+        {
+            joinrel->rows = BIG_ASS_ROW_NUM;
+        }
 	}
 	/* !!! END: HERE IS THE PART WHICH ADDED FOR PG_HINT_PLAN !!! */
 
